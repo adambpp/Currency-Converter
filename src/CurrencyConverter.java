@@ -1,3 +1,6 @@
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -5,7 +8,7 @@ import java.net.URL;
 
 public class CurrencyConverter {
 
-    public String rateConversion(String fromCurrency, String toCurrency/*double amount*/) throws Exception {
+    public double rateConversion(String fromCurrency, String toCurrency, double amount) throws Exception {
         URL obj = new URL(String.format("https://free.currconv.com/api/v7/convert?q=%s_%s&compact=ultra&apiKey=%s",
                 fromCurrency, toCurrency, APIKey.API_KEY));
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -29,10 +32,16 @@ public class CurrencyConverter {
             }
             in.close();
 
-            return response.toString();
+            Gson gson = new Gson();
+            JsonObject jsonResponse = gson.fromJson(response.toString(), JsonObject.class);
+
+            double rate = jsonResponse.get(String.format("%s_%s", fromCurrency, toCurrency)).getAsDouble();
+
+            return amount * rate;
+
         } else {
             System.out.println("'GET' Request Failed. Http Status Code: " + responseCode);
-            return null;
+            return -1;
         }
     }
 
@@ -40,7 +49,7 @@ public class CurrencyConverter {
         CurrencyConverter converter = new CurrencyConverter();
 
         try {
-            System.out.println(converter.rateConversion("USD", "CAD"));
+            System.out.println(converter.rateConversion("USD", "CAD", 25.00));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
