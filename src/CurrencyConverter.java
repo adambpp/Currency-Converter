@@ -9,6 +9,11 @@ import java.net.URL;
 public class CurrencyConverter {
 
     public double rateConversion(String fromCurrency, String toCurrency, double amount) throws Exception {
+
+        if ( toCurrency != null && toCurrency.equals(fromCurrency)) {
+            throw new IllegalStateException();
+        }
+
         URL obj = new URL(String.format("https://free.currconv.com/api/v7/convert?q=%s_%s&compact=ultra&apiKey=%s",
                 fromCurrency, toCurrency, APIKey.API_KEY));
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();

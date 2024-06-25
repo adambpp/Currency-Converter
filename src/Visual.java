@@ -7,6 +7,9 @@ import java.awt.event.ActionListener;
 
 public class Visual {
 
+    private static double conversionResult;
+    private static double amount;
+
     private static Component createMainPanel() {
         // Main panel where the currency conversion happens
         JPanel mainPanel = new JPanel();
@@ -43,11 +46,12 @@ public class Visual {
                 CurrencyConverter converter = new CurrencyConverter();
                 String FromCurrency = (String) fromCurChoice.getSelectedItem();
                 String ToCurrency = (String) toCurChoice.getSelectedItem();
-                double Amount = Double.parseDouble(amountInput.getText());
+                amount = Double.parseDouble(amountInput.getText());
                 try {
-                    converter.rateConversion(FromCurrency, ToCurrency, Amount);
+                    conversionResult = converter.rateConversion(FromCurrency, ToCurrency, amount);
+                    System.out.println(conversionResult);
                 } catch (Exception ex) {
-                    throw new RuntimeException(ex);
+                    System.out.println("Both currencies are equal / something went wrong");;
                 }
             }
         });
@@ -71,6 +75,13 @@ public class Visual {
         mainPanel.add(Box.createVerticalStrut(25));
         mainPanel.add(convert);
         return mainPanel;
+    }
+
+    private static Component createResultPanel() {
+        JPanel resultPanel = new JPanel();
+        resultPanel.setLayout(new BoxLayout(resultPanel, BoxLayout.Y_AXIS));
+
+        return null;
     }
 
     private static void createAndShowGUI() {
