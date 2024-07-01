@@ -9,7 +9,10 @@ public class Visual {
 
     private static double conversionResult = -1;
     private static double amount;
-    private static JLabel resultLabel;
+    private static JLabel resultLabel1;
+    private static JLabel resultLabel2;
+    static CurrencyConverter converter = new CurrencyConverter();
+    private static final String[] curList = converter.getCurrencies().toArray(new String[0]);
 
     private static Component createMainPanel() {
         // Main panel where the currency conversion happens
@@ -18,12 +21,12 @@ public class Visual {
 
         // From currency label and drop down choice menu
         JLabel fromCur = new JLabel("From Currency", SwingConstants.CENTER);
-        JComboBox<String> fromCurChoice = new JComboBox<>(new String[]{"USD", "EUR", "JPY"});
+        JComboBox<String> fromCurChoice = new JComboBox<>(curList);
         fromCurChoice.setMaximumSize(new Dimension(100, 25));
 
         // To currency label and drop down choice menu
         JLabel toCur = new JLabel("To Currency", SwingConstants.CENTER);
-        JComboBox<String> toCurChoice = new JComboBox<>(new String[]{"USD", "EUR", "JPY"});
+        JComboBox<String> toCurChoice = new JComboBox<>(curList);
         toCurChoice.setMaximumSize(new Dimension(100, 25));
 
         // Amount label and input field
@@ -44,15 +47,22 @@ public class Visual {
              */
             @Override
             public void actionPerformed(ActionEvent e) {
-                CurrencyConverter converter = new CurrencyConverter();
-                String FromCurrency = (String) fromCurChoice.getSelectedItem();
-                String ToCurrency = (String) toCurChoice.getSelectedItem();
+
+                String FromChoice = (String) fromCurChoice.getSelectedItem();
+                String FromCurrency = converter.getCurrencyIdByName(FromChoice);
+                String ToChoice = (String) toCurChoice.getSelectedItem();
+                String ToCurrency = converter.getCurrencyIdByName(ToChoice);
                 amount = Double.parseDouble(amountInput.getText());
                 try {
                     conversionResult = converter.rateConversion(FromCurrency, ToCurrency, amount);
-                    resultLabel.setText(String.format("%.2f", conversionResult));
+                    resultLabel1.setText(String.format("%s%.0f %s to %s is",
+                            converter.getCurrencySymbolByCurrencyId(FromCurrency), amount,
+                            converter.getCurrencyIdByName(FromChoice),
+                            converter.getCurrencyIdByName(ToChoice)));
+
+                    resultLabel2.setText(String.format("%s%.2f", converter.getCurrencySymbolByCurrencyId(ToCurrency), conversionResult));
                 } catch (Exception ex) {
-                    resultLabel.setText("Both currencies are equal / something went wrong");
+                    resultLabel1.setText("Both currencies are equal / something went wrong");
                 }
             }
         });
@@ -82,11 +92,19 @@ public class Visual {
         JPanel resultPanel = new JPanel();
         resultPanel.setLayout(new BoxLayout(resultPanel, BoxLayout.Y_AXIS));
 
-        resultLabel = new JLabel(" ", SwingConstants.CENTER);
-        resultLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        resultLabel.setFont(new Font("JetBrains Mono", Font.PLAIN, 30));
+        resultLabel1 = new JLabel(" ", SwingConstants.CENTER);
+        resultLabel1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        resultLabel1.setFont(new Font("JetBrains Mono", Font.PLAIN, 15));
+
+        resultLabel2 = new JLabel(" ", SwingConstants.CENTER);
+        resultLabel2.setAlignmentX(Component.CENTER_ALIGNMENT);
+        resultLabel2.setFont(new Font("Monospaced", Font.PLAIN, 30));
+
+
         resultPanel.add(Box.createVerticalStrut(75));
-        resultPanel.add(resultLabel);
+        resultPanel.add(resultLabel1);
+        resultPanel.add(Box.createVerticalStrut(5));
+        resultPanel.add(resultLabel2);
 
         return resultPanel;
     }

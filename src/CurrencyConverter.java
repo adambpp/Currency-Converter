@@ -5,10 +5,20 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Map;
 
 public class CurrencyConverter {
 
-    public double rateConversion(String fromCurrency, String toCurrency, double amount) throws Exception {
+    private final CurrencyResponse currencyResponse;
+    private final ArrayList<String> currencies = new ArrayList<>();
+
+    public CurrencyConverter() {
+        this.currencyResponse = CreateCurInfo();
+        createCurList();
+    }
+
+    public double rateConversion(String fromCurrency, String toCurrency, double amount) {
         try {
             if (toCurrency != null && toCurrency.equals(fromCurrency)) {
                 throw new IllegalStateException();
@@ -54,7 +64,7 @@ public class CurrencyConverter {
         return amount;
     }
 
-    private CurrencyResponse CreateCurInfo() throws Exception {
+    private CurrencyResponse CreateCurInfo() {
         try {
             URL obj = new URL(String.format("https://free.currconv.com/api/v7/countries?apiKey=%s", APIKey.API_KEY));
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -90,15 +100,51 @@ public class CurrencyConverter {
         return null;
     }
 
+    private void createCurList() {
+        for (Map.Entry<String, Country> entry : currencyResponse.getResults().entrySet()) {
+            Country country = entry.getValue();
+            currencies.add(country.getCurrencyName());
+        }
+    }
+
+    public ArrayList<String> getCurrencies() {
+        return currencies;
+    }
+
+    public String getCurrencyNameByCurrencyId(String currencyId) {
+        for (Map.Entry<String, Country> entry : currencyResponse.getResults().entrySet()) {
+            Country country = entry.getValue();
+            if (country.getCurrencyId().equals(currencyId)) {
+                return country.getCurrencyName();
+            }
+        }
+        return null; // Not found
+    }
+
+    public String getCurrencyIdByName(String currencyName) {
+        for (Map.Entry<String, Country> entry : currencyResponse.getResults().entrySet()) {
+            Country country = entry.getValue();
+            if (country.getCurrencyName().equals(currencyName)) {
+                return country.getCurrencyId();
+            }
+        }
+        return null; // Not found
+    }
+
+    public String getCurrencySymbolByCurrencyId(String currencyId) {
+        for (Map.Entry<String, Country> entry : currencyResponse.getResults().entrySet()) {
+            Country country = entry.getValue();
+            if (country.getCurrencyId().equals(currencyId)) {
+                return country.getCurrencySymbol();
+            }
+        }
+        return null; // Not found
+    }
+
 
     public static void main(String[] args) {
         CurrencyConverter converter = new CurrencyConverter();
 
-        try {
-            converter.CreateCurInfo();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
 
     }
 }
