@@ -7,8 +7,9 @@ import java.awt.event.ActionListener;
 
 public class Visual {
 
-    private static double conversionResult;
+    private static double conversionResult = -1;
     private static double amount;
+    private static JLabel resultLabel;
 
     private static Component createMainPanel() {
         // Main panel where the currency conversion happens
@@ -49,9 +50,9 @@ public class Visual {
                 amount = Double.parseDouble(amountInput.getText());
                 try {
                     conversionResult = converter.rateConversion(FromCurrency, ToCurrency, amount);
-                    System.out.println(conversionResult);
+                    resultLabel.setText(String.format("%.2f", conversionResult));
                 } catch (Exception ex) {
-                    System.out.println("Both currencies are equal / something went wrong");;
+                    resultLabel.setText("Both currencies are equal / something went wrong");
                 }
             }
         });
@@ -81,7 +82,13 @@ public class Visual {
         JPanel resultPanel = new JPanel();
         resultPanel.setLayout(new BoxLayout(resultPanel, BoxLayout.Y_AXIS));
 
-        return null;
+        resultLabel = new JLabel(" ", SwingConstants.CENTER);
+        resultLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        resultLabel.setFont(new Font("JetBrains Mono", Font.PLAIN, 30));
+        resultPanel.add(Box.createVerticalStrut(75));
+        resultPanel.add(resultLabel);
+
+        return resultPanel;
     }
 
     private static void createAndShowGUI() {
@@ -94,9 +101,9 @@ public class Visual {
         // Base panel which adds the main panel to the center and then the left and right have random stuff
         JPanel basePanel = new JPanel();
         basePanel.setLayout(new GridLayout(1, 3));
-        basePanel.add(new JLabel("col 1", SwingConstants.CENTER));
         basePanel.add(createMainPanel());
-        basePanel.add(new JLabel("col 3", SwingConstants.CENTER));
+        //basePanel.add(new JLabel("col 2", SwingConstants.CENTER));
+        basePanel.add(createResultPanel());
 
         frame.add(basePanel);
         frame.setVisible(true);
