@@ -18,8 +18,9 @@ public class CurrencyConverter {
         createCurList();
     }
 
-    public double rateConversion(String fromCurrency, String toCurrency, double amount) {
+    public double rateConversion(String fromCurrency, String toCurrency, double amount) throws IllegalStateException {
         try {
+
             if (toCurrency != null && toCurrency.equals(fromCurrency)) {
                 throw new IllegalStateException();
             }
@@ -60,6 +61,9 @@ public class CurrencyConverter {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            if (e instanceof IllegalStateException) {
+                throw (IllegalStateException) e;
+            }
         }
         return amount;
     }

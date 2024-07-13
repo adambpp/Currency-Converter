@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Arrays;
 
 public class Visual {
 
@@ -13,6 +14,9 @@ public class Visual {
     private static JLabel resultLabel2;
     static CurrencyConverter converter = new CurrencyConverter();
     private static final String[] curList = converter.getCurrencies().toArray(new String[0]);
+    static {
+        Arrays.sort(curList);
+    }
 
     private static Component createMainPanel() {
         // Main panel where the currency conversion happens
@@ -22,17 +26,17 @@ public class Visual {
         // From currency label and drop down choice menu
         JLabel fromCur = new JLabel("From Currency", SwingConstants.CENTER);
         JComboBox<String> fromCurChoice = new JComboBox<>(curList);
-        fromCurChoice.setMaximumSize(new Dimension(100, 25));
+        fromCurChoice.setMaximumSize(new Dimension(175, 25));
 
         // To currency label and drop down choice menu
         JLabel toCur = new JLabel("To Currency", SwingConstants.CENTER);
         JComboBox<String> toCurChoice = new JComboBox<>(curList);
-        toCurChoice.setMaximumSize(new Dimension(100, 25));
+        toCurChoice.setMaximumSize(new Dimension(175, 25));
 
         // Amount label and input field
         JLabel amountText = new JLabel("Amount", SwingConstants.CENTER);
         JTextField amountInput = new JTextField();
-        amountInput.setMaximumSize(new Dimension(100, 25));
+        amountInput.setMaximumSize(new Dimension(175, 25));
         // (maybe limit the amount of chars that can be inputted here)
 
         // Conversion button and its action listener
@@ -61,8 +65,9 @@ public class Visual {
                             converter.getCurrencyIdByName(ToChoice)));
 
                     resultLabel2.setText(String.format("%s%.2f", converter.getCurrencySymbolByCurrencyId(ToCurrency), conversionResult));
-                } catch (Exception ex) {
-                    resultLabel1.setText("Both currencies are equal / something went wrong");
+                } catch (IllegalStateException ex) {
+                    resultLabel1.setText("Try again: Both currencies are equal");
+                    resultLabel2.setText("");
                 }
             }
         });
