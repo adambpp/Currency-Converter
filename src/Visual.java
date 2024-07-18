@@ -12,6 +12,7 @@ public class Visual {
     private static double amount;
     private static JLabel resultLabel1;
     private static JLabel resultLabel2;
+    public static JScrollPane resultScrollPane;
     static CurrencyConverter converter = new CurrencyConverter();
     private static final String[] curList = converter.getCurrencies().toArray(new String[0]);
     static {
@@ -59,12 +60,13 @@ public class Visual {
                 amount = Double.parseDouble(amountInput.getText());
                 try {
                     conversionResult = converter.rateConversion(FromCurrency, ToCurrency, amount);
-                    resultLabel1.setText(String.format("%s%.0f %s to %s is",
+                    resultLabel1.setText(String.format("%s%.0f %s to %s is", // change the num to only show like 4 numbers and then ... (4000...)
                             converter.getCurrencySymbolByCurrencyId(FromCurrency), amount,
                             converter.getCurrencyIdByName(FromChoice),
                             converter.getCurrencyIdByName(ToChoice)));
 
                     resultLabel2.setText(String.format("%s%.2f", converter.getCurrencySymbolByCurrencyId(ToCurrency), conversionResult));
+                    // check size of resultLabel2
                 } catch (IllegalStateException ex) {
                     resultLabel1.setText("Try again: Both currencies are equal");
                     resultLabel2.setText("");
@@ -104,12 +106,17 @@ public class Visual {
         resultLabel2 = new JLabel(" ", SwingConstants.CENTER);
         resultLabel2.setAlignmentX(Component.CENTER_ALIGNMENT);
         resultLabel2.setFont(new Font("Monospaced", Font.PLAIN, 30));
+        resultScrollPane.add(resultLabel2);
 
 
         resultPanel.add(Box.createVerticalStrut(75));
         resultPanel.add(resultLabel1);
         resultPanel.add(Box.createVerticalStrut(5));
         resultPanel.add(resultLabel2);
+        resultPanel.add(resultScrollPane);
+        resultScrollPane.setVisible(false);
+        // add a JScrollPane and only make it visible if resultLabel2 cannot fully fit on the screen
+        // I think any more than 8 characters (not counting the 2 decimals) will cause it to be too long
 
         return resultPanel;
     }
